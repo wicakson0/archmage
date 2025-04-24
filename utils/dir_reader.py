@@ -12,8 +12,8 @@ def is_ascii_printable(
             if not chunk:
                 return True
             text_chars = bytes(string.printable, "ascii")
-            nontext_ratio = sum(1 for b in chunk if b not in text_chars) / len(chunk)
-            return nontext_ratio < nontext_ratio
+            ratio = sum(1 for b in chunk if b not in text_chars) / len(chunk)
+            return ratio < nontext_ratio
     except Exception as e:
         print(f"Error reading file: {e}")
         return False
@@ -36,9 +36,17 @@ def is_plaintext(filepath: str) -> bool:
     return is_ascii_printable(filepath, 0.3) or is_text_utf8(filepath)
 
 
+def is_pdf(filepath: str) -> bool:
+    # Check if the file is a PDF by its extension or by reading its magic number
+    return filepath.lower().endswith(".pdf")
+
+
 def list_file_recursive(rootpath: str) -> List[str]:
     all_files = []
-    for dirpath, _, filenames in os.walk:
+    for dirpath, _, filenames in os.walk(rootpath):
+        # Skip directories related to Git (e.g., .git)
+        if ".git" in dirpath:
+            continue
         for filename in filenames:
             filepath = os.path.join(dirpath, filename)
             all_files.append(filepath)
@@ -49,7 +57,7 @@ def list_plaintext_file(rootpath: str) -> List[str]:
     plaintext_file = []
     all_files = list_file_recursive(rootpath)
     for filepath in all_files:
-        if is_plaintext(filepath):
+        if not is_pdf(filepath) and is_plaintext(filepath):
             plaintext_file.append(filepath)
     return plaintext_file
 

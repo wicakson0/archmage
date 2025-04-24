@@ -5,7 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "peewee>=3.17.9",
     "smolagents[litellm]>=1.14.0",
-    "sqlite-vec>=0.1.6",
-    "tinydb>=4.8.2",
 ]
